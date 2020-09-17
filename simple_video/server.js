@@ -1,3 +1,5 @@
+// this is the server side of the application
+
 const express = require('express') // create express server
 const app = express()   // create 'app' variable
 const server = require('http').Server(app)  // server for socket.io
@@ -22,7 +24,12 @@ io.on('connection', socket => {
     socket.on('join-room', (roomId, userId) => {
         // broadcast userId of the person that just connected to everyone else in the room
         socket.join(roomId)
-        socket.to(roomId).broadcast.emit('user connected', userId)
+        socket.to(roomId).broadcast.emit('user-connected', userId)
+
+        // broadcast userId of the person that just disconnected to everyone else in the room
+        socket.on('disconnect', () => {
+            socket.to(roomId).broadcast.emit('user-disconnected', userId)
+        })
     })
 })
 server.listen(3000)
